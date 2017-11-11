@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>strint test</title>
+    <link href="https://cdn.bootcss.com/mocha/4.0.1/mocha.min.css" rel="stylesheet">
+</head>
+<body>
+<div id="mocha"></div>
+
+<script src="https://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<script src="./expect.js"></script>
+<script src="https://cdn.bootcss.com/mocha/4.0.1/mocha.min.js"></script>
+<script src="../strint.js"></script>
+
+<script>mocha.setup('bdd')</script>
+
+<script>
+  describe('addition', function() {
+    describe("subPositive(x, y)", function() {
+      it('both x, y should be positive, and normalized', function() {
+        expect(strint.subNonNegative).withArgs("-1", "0").to.throwError();
+        expect(strint.subNonNegative).withArgs("0", "-1").to.throwError();
+        expect(strint.subNonNegative).withArgs("-0", "0").to.throwError();
+        expect(strint.subNonNegative).withArgs("0", "-0").to.throwError();
+      })
+
+      it('throw error if x is not greater than or equal to y', function() {
+        expect(strint.subNonNegative).withArgs("122", "123").to.throwError();
+      })
+
+      it('return x if y is zero', function() {
+        expect(strint.subNonNegative("123", "0")).to.equal("123");
+      })
+
+      it('x - x = 0', function() {
+        expect(strint.subNonNegative("123", "123")).to.equal("0");
+        expect(strint.subNonNegative("0", "0")).to.equal("0");
+      })
+
+      it('123 - 23 = 100', function() {
+        expect(strint.subNonNegative("123", "23")).to.equal("100");
+      })
+
+      it('10000 - 1 = 9999', function() {
+        expect(strint.subNonNegative("10000", "1")).to.equal("9999");
+      })
+
+      it('90005 - 15 = 89990', function() {
+        expect(strint.subNonNegative("90005", "15")).to.equal("89990");
+      })
+    })
+
+    describe("addPositive(x, y)", function() {
+      it('both x, y should be positive, and normalized', function() {
+        expect(strint.subNonNegative).withArgs("-1", "0").to.throwError();
+        expect(strint.subNonNegative).withArgs("0", "-1").to.throwError();
+        expect(strint.subNonNegative).withArgs("-0", "0").to.throwError();
+        expect(strint.subNonNegative).withArgs("0", "-0").to.throwError();
+      })
+
+      it('999 + 1 = 1000', function() {
+        expect(strint.addNonNegative("999", "1")).to.equal("1000");
+      })
+
+      it('199999999999999999999 + 1 = 200000000000000000000', function() {
+        expect(strint.addNonNegative("199999999999999999999", "1")).to.equal("200000000000000000000");
+      })
+
+      it('123456 + 876543 = 999999', function() {
+        expect(strint.addNonNegative("123456", "876543")).to.equal("999999");
+      })
+    })
+
+    describe("add(x, y)", function() {
+      it('x + -x = 0', function() {
+        expect(strint.add("123", "-123")).to.equal("0");
+        expect(strint.add("0", "0")).to.equal("0");
+        expect(strint.add("-0", "0")).to.equal("0");
+        expect(strint.add("0", "-0")).to.equal("0");
+        expect(strint.add("-0", "-0")).to.equal("0");
+      })
+
+      it('123 + 654 = 777', function() {
+        expect(strint.add("123", "654")).to.equal("777");
+      })
+
+      it('-123 + -654 = -777', function() {
+        expect(strint.add("-123", "-654")).to.equal("-777");
+      })
+
+      it('-123 + 23 = -100', function() {
+        expect(strint.add("-123", "23")).to.equal("-100");
+      })
+
+      it('-23 + 123 = 100', function() {
+        expect(strint.add("-23", "123")).to.equal("100");
+      })
+    })
+
+    describe("sub(x, y)", function() {
+      it('x - x = 0', function() {
+        expect(strint.sub("123", "123")).to.equal("0");
+        expect(strint.sub("0", "0")).to.equal("0");
+      })
+
+      it('123 - 23', function() {
+        expect(strint.sub("123", "23")).to.equal("100");
+      })
+
+      it('-123 - 23', function() {
+        expect(strint.sub("-123", "23")).to.equal("-146");
+      })
+    })
+  })
+
+  describe('multiplication', function() {
+    describe('mulDigit', function() {
+      it('0 * 3 = 0', function() {
+        expect(strint.mulDigit("0", 3)).to.equal("0");
+      })
+
+      it('123 * 0 = 0', function() {
+        expect(strint.mulDigit("123", 0)).to.equal("0");
+      })
+
+      it('123 * 3 = 369', function() {
+        expect(strint.mulDigit("123", 3)).to.equal("369");
+      })
+
+      it('1234 * 9 = 11106', function() {
+        expect(strint.mulDigit("1234", 9)).to.equal("11106");
+      })
+
+      it('9999 * 9 = 89991', function() {
+        expect(strint.mulDigit("9999", 9)).to.equal("89991");
+      })
+    })
+
+    describe('mulPositive', function() {
+      it('123 * 0 = 0', function() {
+//        expect(strint.mulPositive("123", "0")).to.equal("0");
+        expect(strint.mulPositive("0", "123")).to.equal("0");
+      })
+
+      it('11 * 11 = 121', function() {
+        expect(strint.mulPositive("11", "11")).to.equal("121");
+      })
+
+      it('111111 * 111111 = 12345654321', function() {
+        expect(strint.mulPositive("111111", "111111")).to.equal("12345654321");
+      })
+    })
+
+    describe('mul', function() {
+      it('-123 * 0 = 0 and vice versa', function() {
+        expect(strint.mul("-123", "0")).to.equal("0");
+        expect(strint.mul("-0", "123")).to.equal("0");
+      })
+
+      it('-11 * -11 = 121', function() {
+        expect(strint.mul("-11", "-11")).to.equal("121");
+      })
+
+      it('111111 * -111111 = -12345654321', function() {
+        expect(strint.mul("111111", '-111111')).to.equal('-12345654321');
+      })
+    })
+  })
+
+  describe("division", function() {
+    describe("quotientRemainderPositive", function() {
+      it('1500 / 15 = [100, 0]', function() {
+        expect(strint.quotientRemainderPositive("1500", "15")).to.eql(["100", "0"]);
+      })
+
+      it('167 / 15 = [11, 2]', function() {
+        expect(strint.quotientRemainderPositive("167", "15")).to.eql(["11", "2"]);
+      })
+
+      it('255 / 15 = [15, 0]', function() {
+        expect(strint.quotientRemainderPositive("225", "15")).to.eql(["15", "0"]);
+      })
+
+      it('700 / 15 = [46, 10]', function() {
+        expect(strint.quotientRemainderPositive("700", "15")).to.eql(["46", "10"]);
+      })
+
+      it('290 / 15 = [19, 5]', function() {
+        expect(strint.quotientRemainderPositive("290", "15")).to.eql(["19", "5"]);
+      })
+    })
+
+    describe("div", function() {
+      it('15 / 3 = 5', function() {
+        expect(strint.div("15", "3")).to.eql("5");
+      })
+
+      it('-15 / -3 = 5', function() {
+        expect(strint.div("-15", "-3")).to.eql("5");
+      })
+
+      it('-15 / 3 = -5', function() {
+        expect(strint.div("-15", "3")).to.eql("-5");
+      })
+
+      it('15 / -3 = -5', function() {
+        expect(strint.div("15", "-3")).to.eql("-5");
+      })
+    })
+  })
+
+  describe('comparison', function() {
+    describe('eq', function() {
+      it('"0000" equals "0"', function() {
+        expect(strint.eq("0000", "0")).to.be(true);
+      })
+
+      it('"-0" equals "0"', function() {
+        expect(strint.eq("-0", "0")).to.be(true);
+      })
+
+      it('"-00012345" equals "-12345"', function() {
+        expect(strint.eq("-00012345", "-12345")).to.be(true);
+      })
+    })
+
+    describe('ltNonNegative', function() {
+      it('"123" lt "124"', function() {
+        expect(strint.ltNonNegative("123", "124")).to.be(true);
+      })
+
+      it('"00000" lt "1"', function() {
+        expect(strint.ltNonNegative("00000", "1")).to.be(true);
+      })
+
+      it('"0" not lt "0"', function() {
+        expect(strint.ltNonNegative("0", "0")).to.be(false);
+      })
+    })
+
+    describe('lt', function() {
+      it('"-2" lt "-1", "0", "-0", "1", "1" lt "2"', function() {
+        expect(strint.lt("-2", "-1")).to.be(true);
+        expect(strint.lt("-2", "0")).to.be(true);
+        expect(strint.lt("-2", "-0")).to.be(true);
+        expect(strint.lt("-2", "1")).to.be(true);
+        expect(strint.lt("1", "2")).to.be(true);
+        expect(strint.lt("0", "123")).to.be(true);
+
+        expect(strint.lt("-1", "-2")).to.be(false);
+        expect(strint.lt("0", "-2")).to.be(false);
+        expect(strint.lt("-0", "-2")).to.be(false);
+        expect(strint.lt("1", "-2")).to.be(false);
+        expect(strint.lt("2", "1")).to.be(false);
+        expect(strint.lt("123", "0")).to.be(false);
+      })
+
+      it('"-0" not lt "0"', function() {
+        expect(strint.lt("-0", "0")).to.be(false);
+      })
+
+      it('"123" not lt "123"', function() {
+        expect(strint.lt("123", "123")).to.be(false);
+      })
+    })
+  })
+
+
+  describe('signs', function() {
+    describe('isNegative', function() {
+      it('"-0" and "0" is not negative', function() {
+        expect(strint.isNegative("-0")).to.be(false);
+        expect(strint.isNegative("0")).to.be(false);
+      })
+
+      it('"-123" is negative', function() {
+        expect(strint.isNegative("-123")).to.be(true);
+      })
+
+      it('"123" is not negative', function() {
+        expect(strint.isNegative("123")).to.be(false);
+      })
+    })
+
+    describe('isNonNegative', function() {
+      it('"123" is non negative', function() {
+        expect(strint.isNonNegative("123")).to.be(true);
+      })
+
+      it('"-0" is non negative', function() {
+        expect(strint.isNonNegative("-0")).to.be(true);
+      })
+
+      it('"-1" is not non negative', function() {
+        expect(strint.isNonNegative("-1")).to.be(false);
+      })
+    })
+
+    describe('negate', function() {
+      it('negate "123" gets "-123"', function() {
+        expect(strint.negate("123")).to.equal("-123");
+      })
+
+      it('negate "-123" gets "123"', function() {
+        expect(strint.negate("-123")).to.equal("123");
+      })
+
+      it('negate "0" gets "-0"', function() {
+        expect(strint.negate("0")).to.equal("-0");
+      })
+
+      it('negate "-0" gets "0"', function() {
+        expect(strint.negate("-0")).to.equal("0");
+      })
+    })
+
+    describe("abs", function() {
+      it('abs "-0" gets "0", abs "0" gets "0"', function() {
+        expect(strint.abs("-0")).to.equal("0");
+        expect(strint.abs("0")).to.equal("0");
+      })
+
+      it('abs "-12345" gets "12345", abs "12345" gets "12345"', function() {
+        expect(strint.abs("-12345")).to.equal("12345");
+        expect(strint.abs("12345")).to.equal("12345");
+      })
+    })
+  })
+
+  describe('helpers', function() {
+    describe('normalize', function() {
+      it('"00000" to "0"', function() {
+        expect(strint.normalize("00000")).to.equal("0");
+      })
+
+      it('"00012345" to "12345"', function() {
+        expect(strint.normalize("00012345")).to.equal("12345");
+      })
+
+      it('"-00012345" to "-12345"', function() {
+        expect(strint.normalize("-00012345")).to.equal("-12345");
+      })
+    })
+  })
+
+</script>
+
+<script>
+  mocha.checkLeaks();
+  mocha.globals(['jQuery']);
+  mocha.run();
+</script>
+</body>
+</html>
