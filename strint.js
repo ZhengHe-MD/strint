@@ -190,6 +190,57 @@
     return normalize(product);
   }
 
+  var nativeMul = function(lhs, rhs) {
+    return parseInt(lhs) * parseInt(rhs);
+  }
+
+  var CUTOFF = 8 // sqrt(2^53 - 1) = 94906265
+
+  var karatsubaMulNonNegative = e.karatsubaMulNonNegative = function(lhs, rhs) {
+    forceNonNegativeString(lhs);
+    forceNonNegativeString(rhs);
+
+    var lhsNorm = normalize(lhs);
+    var rhsNorm = normalize(rhs);
+
+    var ll = lhsNorm.length;
+    var rl = rhsNorm.length;
+
+    if (ll <= CUTOFF || rl <= CUTOFF) {
+      return nativeMul(lhsNorm, rhsNorm).toString();
+    } else {
+      var len = Math.max(ll, rl);
+      var half = Math.floor(len / 2);
+      var leftHalf = len - half;
+
+      var paddedLhs = leftPadZeros(lhsNorm, len);
+      var paddedRhs = leftPadZeros(rhsNorm, len);
+
+      var lhsNormHigh = paddedLhs.slice(0, leftHalf);
+      var lhsNormLow = paddedLhs.slice(leftHalf);
+      var rhsNormHigh = paddedRhs.slice(0, leftHalf);
+      var rhsNormLow = paddedRhs.slice(leftHalf);
+
+      var a = karatsubaMulNonNegative(lhsNormHigh, rhsNormHigh);
+      var c = karatsubaMulNonNegative(lhsNormLow, rhsNormLow);
+      var b = karatsubaMulNonNegative(add(lhsNormHigh, lhsNormLow), add(rhsNormHigh, rhsNormLow));
+      b = sub(sub(b, a), c);
+
+      for (var i = 0; i < 2 * half; i++) a = a + '0';
+      for (var i = 0; i < half; i++) b = b + '0';
+      return add(add(a, b), c);
+    }
+  }
+
+  var karatsubaMul = e.karatsubaMul = function(lhs, rhs) {
+    forceString(lhs);
+    forceString(rhs);
+
+    var absRes = karatsubaMulNonNegative(abs(lhs), abs(rhs));
+    var product = sameSign(lhs, rhs) ? absRes : negate(absRes);
+    return normalize(product);
+  }
+
   //------------------- Division
 
   var quotientRemainderPositive = e.quotientRemainderPositive = function (dividend, divisor) {

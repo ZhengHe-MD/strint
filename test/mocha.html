@@ -12,6 +12,7 @@
 <script src="./expect.js"></script>
 <script src="https://cdn.bootcss.com/mocha/4.0.1/mocha.min.js"></script>
 <script src="../strint.js"></script>
+<script src="https://cdn.bootcss.com/bignumber.js/4.1.0/bignumber.min.js"></script>
 
 <script>mocha.setup('bdd')</script>
 
@@ -165,6 +166,34 @@
       it('111111 * -111111 = -12345654321', function() {
         expect(strint.mul("111111", '-111111')).to.equal('-12345654321');
       })
+    })
+
+    describe('karatsubaMulNonNegative', function() {
+      it('123456987987 * 23873489502938 = 2947349106771987267205806', function() {
+        expect(strint.karatsubaMulNonNegative("123456987987", "23873489502938")).to.equal("2947349106771987267205806");
+      })
+
+      it('938457230498572349587234905872349587234529035723094582730945872 * 83475209348572043985723409857 = 78337913780549456111484031230731739581849074002647160846218998280088525659129048142738260304', function() {
+        expect(strint.karatsubaMulNonNegative("938457230498572349587234905872349587234529035723094582730945872", "83475209348572043985723409857")).to.equal("78337913780549456111484031230731739581849074002647160846218998280088525659129048142738260304");
+      })
+
+      it('0 * 3495827349582734345 = 0', function() {
+        expect(strint.karatsubaMulNonNegative("0", "3495827349582734345")).to.equal("0");
+      })
+
+      it('3495827349582734345 * 0 = 0', function() {
+        expect(strint.karatsubaMulNonNegative("3495827349582734345", "0")).to.equal("0");
+      })
+    })
+
+    describe('karatsubaMul', function() {
+        it('123456987987 * -23873489502938 = -2947349106771987267205806', function() {
+          expect(strint.karatsubaMul("123456987987", "-23873489502938")).to.equal("-2947349106771987267205806");
+        })
+
+        it('-123456987987 * -23873489502938 = 2947349106771987267205806', function() {
+          expect(strint.karatsubaMul("-123456987987", "-23873489502938")).to.equal("2947349106771987267205806");
+        })
     })
   })
 
