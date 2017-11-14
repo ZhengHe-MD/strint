@@ -206,7 +206,7 @@
     var ll = lhsNorm.length;
     var rl = rhsNorm.length;
 
-    if (ll <= CUTOFF || rl <= CUTOFF) {
+    if (ll < CUTOFF && rl < CUTOFF) {
       return nativeMul(lhsNorm, rhsNorm).toString();
     } else {
       var len = Math.max(ll, rl);
@@ -226,8 +226,11 @@
       var b = karatsubaMulNonNegative(add(lhsNormHigh, lhsNormLow), add(rhsNormHigh, rhsNormLow));
       b = sub(sub(b, a), c);
 
+      // multiple 10^(2*half)
       for (var i = 0; i < 2 * half; i++) a = a + '0';
+      // multiple 10^(half)
       for (var i = 0; i < half; i++) b = b + '0';
+
       return add(add(a, b), c);
     }
   }
